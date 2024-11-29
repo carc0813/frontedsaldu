@@ -19,7 +19,7 @@ export const fetchProductsByRole= async () => {
     console.log("Datos completos recibidos del backend:", response.data);
 
     // Formatear los productos para mantener solo la información relevante
-    const products = response.data.map((product) => {
+    const products = response.data.productsData.map((product) => {
       const { id, name, description, status, price, images, stock_status } = product;
 
       // Verificar si el producto tiene imágenes asociadas
