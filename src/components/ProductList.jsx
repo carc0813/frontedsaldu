@@ -29,13 +29,32 @@ const ProductsList = () => {
 
   // Renderizar la lista de productos o un mensaje en caso de no tener productos
   return (
-    <Grid container spacing={4} sx={{ padding: 3 }}>
-      {products.map((product) => (
-        <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-          <ProductCard product={product} />
-        </Grid>
-      ))}
-    </Grid>
+    <Grid 
+  container 
+  spacing={4} 
+  sx={{ 
+    padding: 3, 
+    backgroundColor: '#f5f5f5', 
+    borderRadius: '8px', 
+    justifyContent: 'space-between'
+  }}
+>
+  {products && Array.isArray(products) ? (
+    products.map((product) => (
+      <Grid 
+        item 
+        xs={12} sm={6} md={4} lg={3} 
+        key={product.id} 
+        sx={{ display: 'flex', justifyContent: 'center' }}
+      >
+        <ProductCard product={product} />
+      </Grid>
+    ))
+  ) : (
+    <p>Cargando productos o no hay disponibles.</p>
+  )}
+</Grid>
+
   );
 };
 

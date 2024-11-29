@@ -11,7 +11,8 @@ export const loginUser = async (email, password) => {
   try {
     const response = await axios.post(`${API_URL}/auth/signIn`, { email, password });
     const token = response.data.token;
-
+    localStorage.setItem('authToken', token); // Guarda el token para futuras solicitudes
+    console.log('Inicio de sesión exitoso');
     // Decodificar el token para extraer datos del usuario
     const decodedUser = jwtDecode(token);
     console.log("Token descifrado:", decodedUser);
