@@ -4,18 +4,23 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsAction } from "../redux/actions/productActions";
 import ProductList from "./ProductList";
 
+
+
+
 const Home = () => {
   const dispatch = useDispatch();
   // Estado global: autenticación y productos
-  const { user, isAuthenticated, token } = useSelector((state) => state.auth);
-  const { products, error } = useSelector((state) => state.products);
-
+  const { user, isAuthenticated, token,role } = useSelector((state) => state.auth);  
+  const { products,error } = useSelector((state) => state.products);
+ 
   // Efecto para cargar productos según el usuario autenticado
   useEffect(() => {
     if (isAuthenticated && token) {
       dispatch(fetchProductsAction(token, user)); // Pasa el rol y el ID del usuario
     }
   }, [dispatch, isAuthenticated, token, user]);
+
+
 
 
   if (!products) {
@@ -32,15 +37,15 @@ const Home = () => {
 
   return (
     <Box padding={3}>
-    <Typography variant="h3" gutterBottom>
-      Lista de Productos
-    </Typography>
+     <h1>Bienvenido, {role}</h1>
     {error ? (
       <Typography color="error">{error}</Typography>
     ) : (
-      <ProductList products={products} />
+     
+      < ProductList />
     )}
   </Box>
+
   );
 };
 

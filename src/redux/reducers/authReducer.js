@@ -4,6 +4,7 @@ const initialState = {
   user: null,
   error: null,
   isAuthenticated: false,
+  role: null, // Almacena el rol del usuario
 };
 
 
@@ -13,13 +14,16 @@ const authReducer = (state = initialState, action) => {
    console.log("Acción recibida:", action);
    console.log("Estado actual:", state);
 
-  switch (action.type) {
+  switch (action.type) { 
     
     case LOGIN_SUCCESS:
       return { ...state,
          user: action.payload, 
          error: null,
-         isAuthenticated: true, };
+         isAuthenticated: true,
+         role: action.payload.role, // Asigna el rol al estado
+        
+        };
     case LOGIN_FAILURE:
       console.log("Error en login:", action.payload);
       return { ...state,

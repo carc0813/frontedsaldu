@@ -1,34 +1,45 @@
-
 import React from "react";
-import { Card, CardMedia, CardContent, Typography, Button } from "@mui/material";
+import { Card, CardMedia, CardContent, Typography, CardActions, Button } from "@mui/material";
 
-const ProductCard = ({ product }) => {
-  return (
-    <Card sx={{ maxWidth: 345, boxShadow: 3, borderRadius: 2, padding: 2 }}>
-      <CardMedia
-        component="img"
-        height="140"
-        image={product.images[0]?.src || "/placeholder.jpg"}
-        alt={product.name}
-      />
-      <CardContent>
-        <Typography variant="h6" component="div" gutterBottom>
-          {product.name}
-        </Typography>
-        <Typography
-          variant="body2"
-          color="text.secondary"
-          dangerouslySetInnerHTML={{ __html: product.description }}
-        />
-        <Typography variant="h6" color="primary" mt={2}>
-          ${product.price || "No disponible"}
-        </Typography>
-      </CardContent>
-      <Button variant="contained" color="primary" fullWidth>
-        Ver Producto
+const ProductCard = ({ product }) => (
+  <Card sx={{ maxWidth: 345, width: "100%" }}>
+    <CardMedia
+      component="img"
+      height="140"
+      image={product.images[0]?.src || "https://via.placeholder.com/150"}
+      alt={product.images[0]?.alt || "Producto sin imagen"}
+    />
+    <CardContent>
+      <Typography gutterBottom variant="h6" component="div">
+        {product.name}
+      </Typography>
+      <Typography
+        variant="body2"
+        color="textSecondary"
+        sx={{
+          maxHeight: 60,
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          display: "block",
+        }}
+        title={product.description || "Sin descripción disponible"} // Tooltip para texto truncado
+      >
+        {product.description || "Sin descripción disponible"}
+      </Typography>
+      <Typography variant="subtitle1" color="primary" sx={{ marginTop: 1 }}>
+        Precio: ${product.price}
+      </Typography>
+    </CardContent>
+    <CardActions>
+      {/* <Button size="small" variant="contained" color="primary">
+        Comprar
+      </Button> */}
+      <Button size="small" variant="outlined" color="secondary">
+        Ver detalles
       </Button>
-    </Card>
-  );
-};
+    </CardActions>
+  </Card>
+);
 
 export default ProductCard;

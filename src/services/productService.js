@@ -4,16 +4,24 @@ import axios from "axios";
 const API_URL = "http://localhost:8080";
 
 const token = localStorage.getItem('authToken'); // Recuperar el token
+const role = localStorage.getItem('userRole');//Recuperar el Rol 
 
+
+console.log("Rol del usuario:", role);
 // Función para obtener todos los productos
-export const fetchProductsByRole= async () => {
+export const fetchProductsByRole= async (page = 1, limit = 12) => {
   try {
     const response = await axios.get(`${API_URL}/products`, {
       headers: {
         Authorization: `Bearer ${token}`, // Enviar el token en el encabezado
       },
-    }) // Solicitud al backend
-
+      params: {
+        page, // Página actual
+        limit, // Número de elementos por página
+        role
+      },
+    })
+   
 
 
     console.log("Datos completos recibidos del backend:", response.data);
@@ -41,7 +49,11 @@ export const fetchProductsByRole= async () => {
       };
     });
 
-    return products; // Retornar los productos formateados
+    return  {
+      products,
+      totalPages: response.data.totalPages, // Número total de páginas
+      currentPage: response.data.currentPage, // Página actual
+    };
   } catch (error) {
     console.error("Error al obtener los productos:", error.message);
     throw error; // Lanza el error para manejarlo en el frontend
