@@ -10,7 +10,7 @@ import ProductList from "./ProductList";
 const Home = () => {
   const dispatch = useDispatch();
   // Estado global: autenticación y productos
-  const { user, isAuthenticated, token,role } = useSelector((state) => state.auth);  
+  const { user, isAuthenticated, token,role} = useSelector((state) => state.auth);  
   const { products,error } = useSelector((state) => state.products);
  
   // Efecto para cargar productos según el usuario autenticado

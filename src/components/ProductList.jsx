@@ -7,7 +7,7 @@ import { fetchProductsAction } from "../redux/actions/productActions";
 
 const ProductsList = () => {
   const dispatch = useDispatch();
-
+  const { role } = useSelector((state) => state.auth);
   // Datos desde Redux
   const { products, totalPages, page } = useSelector((state) => state.products);
 
@@ -25,47 +25,17 @@ const ProductsList = () => {
   };
 
   return (
-    <Box sx={{ padding: 3 }}>
-      <Typography variant="h4" gutterBottom>
-        Lista de Productos
+    <Box>
+      <Typography variant="h4">
+        Productos {role === "admin" ? "de Todos" : "Propios"}
       </Typography>
-
-      <Grid
-        container
-        spacing={4}
-        sx={{
-          backgroundColor: "#f5f5f5",
-          borderRadius: "8px",
-          padding: 3,
-          justifyContent: "space-between",
-        }}
-      >
-        {products && products.length > 0 ? (
-          products.map((product) => (
-            <Grid
-              item
-              xs={12}
-              sm={6}
-              md={4}
-              lg={3}
-              key={product.id}
-              sx={{
-                display: "flex",
-                justifyContent: "center",
-                alignItems: "center",
-              }}
-            >
-              <ProductCard product={product} />
-            </Grid>
-          ))
-        ) : (
-          <Typography variant="body1" color="textSecondary">
-            No hay productos disponibles.
-          </Typography>
-        )}
+      <Grid container spacing={2}>
+        {products.map((product) => (
+          <Grid item key={product.id} xs={12} sm={6} md={4}>
+            <ProductCard product={product} />
+          </Grid>
+        ))}
       </Grid>
-
-      {/* Paginación */}
       <PaginationComponent
         currentPage={page}
         totalPages={totalPages}
