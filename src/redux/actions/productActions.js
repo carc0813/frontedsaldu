@@ -13,19 +13,19 @@ export const fetchProductsAction = (page = 1, limit = 12) => {
   return async (dispatch) => {
     try {
       // Llamada a fetchProductsByRole, que devuelve productos y datos de paginación
-      const {products, totalPages, page: currentPage} =  await fetchProductsByRole(page, limit);
+      const {products, totalPages, currentPage} =  await fetchProductsByRole(page, limit);
 
       // Dispatch para actualizar el estado global
       console.log("Datos enviados al reducer:", {
         products,
-        page,
+        page: currentPage,
         totalPages,
       });
       dispatch({
         type: FETCH_PRODUCTS_SUCCESS,
         payload: {
           products,
-          page,
+          page: currentPage,
           totalPages
         },
       });
@@ -41,7 +41,7 @@ export const fetchProductsAction = (page = 1, limit = 12) => {
 
 export const setCurrentPage = () => ({
   type: SET_CURRENT_PAGE,
-  payload: { products, totalPages, page },
+  payload: { products, totalPages, page }
 });
 
 

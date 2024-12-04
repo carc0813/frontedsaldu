@@ -15,15 +15,15 @@ export const loginUser = async (email, password) => {
 
     localStorage.setItem('authToken', token); // Guarda el token para futuras solicitudes
      console.log('Inicio de sesión exitoso');
-
      
     // Decodificar el token para extraer datos del usuario
     const decodedUser = jwtDecode(token);
     console.log("Token descifrado:", decodedUser);
-
+    
     // Almacenar datos del usuario actual
     currentUser = { token, role: decodedUser.role, id_user: decodedUser.id_user};
-
+    localStorage.setItem('userRole', currentUser.role);
+    
     return currentUser; // Devuelve el token y los datos del usuario
   } catch (error) {
     throw new Error("Credenciales inválidas");

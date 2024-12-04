@@ -11,20 +11,24 @@ console.log("Rol del usuario:", role);
 // Función para obtener todos los productos
 export const fetchProductsByRole= async (page = 1, limit = 12) => {
   try {
-    const response = await axios.get(`${API_URL}/products`, {
+    let rute = `${API_URL}/products`;
+    console.log("Gamma ========> role:",role)
+    if (role === "vendedor") {
+      rute = `${API_URL}/products/user`;
+    }
+    const response = await axios.get(`${rute}`, {
       headers: {
         Authorization: `Bearer ${token}`, // Enviar el token en el encabezado
       },
       params: {
         page, // Página actual
-        limit, // Número de elementos por página
-        role
+        limit // Número de elementos por página
       },
     })
    
 
 
-    console.log("Datos completos recibidos del backend:", response.data);
+    // console.log("Datos completos recibidos del backend:", response.data);
 
     // Formatear los productos para mantener solo la información relevante
     const products = response.data.productsData.map((product) => {
