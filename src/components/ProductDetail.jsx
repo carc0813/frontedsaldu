@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Button } from "@mui/material";
+import { Box, Typography, Button, CircularProgress, Snackbar } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { useParams } from "react-router-dom";
 import { fetchProductDetailAction } from "../redux/actions/productActions";
@@ -9,18 +9,34 @@ const ProductDetail = () => {
   const dispatch = useDispatch();
 
   // Obtener el estado global
-  const { productDetail, error } = useSelector(
+  const { productDetail, error, loading } = useSelector(
     (state) => state.productDetail || {}
   );
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchProductDetailAction(id));
+      dispatch(fetchProductDetailAction(id)); // Llamar a la acción para cargar los detalles
     }
   }, [dispatch, id]);
 
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
   if (error) {
-    return <div>Error al cargar el producto: {error}</div>;
+    return (
+      <Box>
+        <Snackbar
+          open={Boolean(error)}
+          message={`Error al cargar el producto: ${error}`}
+          autoHideDuration={6000}
+        />
+      </Box>
+    );
   }
 
   if (!productDetail) {
@@ -53,3 +69,4 @@ const ProductDetail = () => {
 };
 
 export default ProductDetail;
+

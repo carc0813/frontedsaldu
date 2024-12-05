@@ -19,11 +19,11 @@ import {
   export default function productReducer(state = initialState, action) {
     switch (action.type) {
      case FETCH_PRODUCTS_SUCCESS:
-        console.log("productos", action.payload);
+        console.log("productos", action.payload.page);
         return {
           ...state,
         products: action.payload.products,
-        page: action.payload.page || state.page,
+        page: action.payload.page || state.page,// Página actual
         totalPages:action.payload.totalPages,
         error: null,
         };

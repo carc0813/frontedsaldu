@@ -20,7 +20,7 @@ const ProductsList = () => {
 
   // Manejador de cambio de página
   const handlePageChange = (event, selectedPage) => {
-    dispatch({ type: "SET_PAGE", payload: selectedPage });
+    dispatch({ type: "SET_CURRENT_PAGE", payload: selectedPage });
     dispatch(fetchProductsAction(selectedPage, limit));
   };
 
