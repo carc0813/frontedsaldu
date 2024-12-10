@@ -9,8 +9,8 @@ let currentUser = null; // Variable para almacenar el usuario actual
 const clearUserData = () => {
   console.log("Limpiando datos de sesión anteriores...");
   currentUser = null; // Limpiar usuario en memoria
-  localStorage.removeItem('authToken');
-  localStorage.removeItem('userRole');
+  localStorage.removeItem('token)') ;
+  localStorage.removeItem('role');
 };
 
 // Función para iniciar sesión
@@ -46,9 +46,17 @@ export const getCurrentUser = () => {
   return currentUser;
 };
 
-// Función para cerrar sesión
-export const logoutUser = () => {
-  console.log('Cerrando sesión...');
-  clearUserData(); // Usa la misma función para limpiar datos
-  console.log('Sesión cerrada y almacenamiento limpiado');
+
+// Función de logout mejorada
+
+export const logoutUser = (currentRole) => {
+  console.log("Cerrando sesión...");
+  
+  // Limpia datos locales
+  localStorage.removeItem("token");
+  localStorage.removeItem("user");
+  localStorage.removeItem("role");
+  localStorage.removeItem("products");
+
+  console.log("Sesión cerrada exitosamente");
 };

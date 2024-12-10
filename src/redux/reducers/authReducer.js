@@ -1,4 +1,8 @@
-import { LOGIN_SUCCESS, LOGIN_FAILURE } from '../actions/authActions';
+import {
+  LOGIN_SUCCESS,
+  LOGIN_FAILURE,
+  LOGOUT_SUCCESS,
+} from "../actions/authActions";
 
 const initialState = {
   user: null,
@@ -7,30 +11,31 @@ const initialState = {
   role: null, // Almacena el rol del usuario
 };
 
-
-
 //Reducer para manejar el estado de autenticación.
 const authReducer = (state = initialState, action) => {
-   console.log("Acción recibida:", action);
-   console.log("Estado actual:", state);
+  console.log("Acción recibida:", action);
+  console.log("Estado actual:", state);
 
-  switch (action.type) { 
-    
+  switch (action.type) {
     case LOGIN_SUCCESS:
-      return { ...state,
-         user: action.payload, 
-         error: null,
-         isAuthenticated: true,
-         role: action.payload.role, // Asigna el rol al estado
-        
-        };
+      return {
+        ...state,
+        user: action.payload,
+        error: null,
+        isAuthenticated: true,
+        role: action.payload.role, // Asigna el rol al estado
+      };
+    case LOGOUT_SUCCESS:
+      return initialState;
     case LOGIN_FAILURE:
       console.log("Error en login:", action.payload);
-      return { ...state,
-          user: null,
-          error: action.payload,
-          isAuthenticated: false,
-        };
+      return {
+        ...state,
+        user: null,
+        error: action.payload,
+        isAuthenticated: false,
+      };
+
     default:
       return state;
   }

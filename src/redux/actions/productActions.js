@@ -8,6 +8,8 @@ export const FETCH_PRODUCTS_ERROR = "FETCH_PRODUCTS_ERROR";
 export const FETCH_PRODUCT_DETAIL_SUCCESS = "FETCH_PRODUCT_DETAIL_SUCCESS";
 export const FETCH_PRODUCT_DETAIL_ERROR = "FETCH_PRODUCT_DETAIL_ERROR";
 export const SET_CURRENT_PAGE="SET_CURRENT_PAGE,";
+export const  CLEAR_PRODUCTS="CLEAR_PRODUCTS";
+export const LOAD_PRODUCTS_BY_ROLE="LOAD_PRODUCTS_BY_ROLE"
 
 export const fetchProductsAction = (page = 1, limit = 12) => {
   return async (dispatch) => {
@@ -78,3 +80,16 @@ export const fetchProductDetailAction = (productId) => {
     }
   };
 };
+
+
+
+export const clearProducts = () => ({ type: CLEAR_PRODUCTS });
+export const loadProductsByRole = (role) => async (dispatch) => {
+  try {
+    const products = await fetchProductsByRole(role); // Simula llamada a una API
+    dispatch({ type: LOAD_PRODUCTS_BY_ROLE, payload: products });
+  } catch (error) {
+    console.error('Error al cargar productos:', error);
+  }
+};
+

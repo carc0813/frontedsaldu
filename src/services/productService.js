@@ -2,68 +2,141 @@
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { useState, useEffect } from "react";
+
+
 const API_URL = "http://localhost:8080";
 
-const token = localStorage.getItem('authToken'); // Recuperar el token
-const role = localStorage.getItem('userRole');//Recuperar el Rol 
+// export const fetchProductsByRole= async (page = 1, limit = 12) => {
+//   try {
+//     let rute = `${API_URL}/products`;
+//     // console.log("Gamma ========> role:",role)
+//     if (role === "vendedor") {
+//       rute = `${API_URL}/products/user`;
+//     }
+//     const response = await axios.get(`${rute}`, {
+//       headers: {
+//         Authorization: `Bearer ${token}`, // Enviar el token en el encabezado
+//       },
+//       params: {
+//         page, // Página actual
+//         limit // Número de elementos por página
+//       },
+//     })
+   
 
 
-//console.log("Rol del usuario:", role);
-// Función para obtener todos los productos
-export const fetchProductsByRole= async (page = 1, limit = 12) => {
+//      console.log("Datos completos recibidos del backend:", response.data);
+
+//     // Formatear los productos para mantener solo la información relevante
+//     const products = response.data.productsData.map((product) => {
+//       const { id, name, description, status, price, images, stock_status } = product;
+
+//       // Verificar si el producto tiene imágenes asociadas
+//       const formattedImages = images.map((image) => ({
+//         id: image.id,
+//         src: image.src,
+//         name: image.name,
+//         alt: image.alt || "Sin descripción",
+//       }));
+
+//       return {
+//         id,
+//         name,
+//         description,
+//         status,
+//         price,
+//         images: formattedImages,
+//         stock_status,
+//       };
+//     });
+
+//     return  {
+//       products,
+//       totalPages: response.data.totalPages, // Número total de páginas
+//       currentPage: response.data.currentPage, // Página actual
+//     };
+//   } catch (error) {
+//     console.error("Error al obtener los productos:", error.message);
+//     throw error; // Lanza el error para manejarlo en el frontend
+//   }
+// };
+
+export const fetchProductsByRole = async (role, page = 1, limit = 12) => {
   try {
-    let rute = `${API_URL}/products`;
-    // console.log("Gamma ========> role:",role)
-    if (role === "vendedor") {
-      rute = `${API_URL}/products/user`;
+    // Verificar y obtener el token desde el almacenamiento
+    const token = localStorage.getItem('authToken'); // Recuperar el token
+    const role = localStorage.getItem('userRole');//Recuperar el Rol 
+    if (!token) {
+      throw new Error("Token de autenticación no disponible.");
     }
-    const response = await axios.get(`${rute}`, {
+
+    // Determinar la ruta según el rol del usuario
+    const rute = getProductsEndpoint(role);
+
+    // Hacer la solicitud al backend
+    const response = await axios.get(rute, {
       headers: {
         Authorization: `Bearer ${token}`, // Enviar el token en el encabezado
       },
       params: {
         page, // Página actual
-        limit // Número de elementos por página
+        limit, // Número de elementos por página
+        role
       },
-    })
-   
-
-
-     console.log("Datos completos recibidos del backend:", response.data);
-
-    // Formatear los productos para mantener solo la información relevante
-    const products = response.data.productsData.map((product) => {
-      const { id, name, description, status, price, images, stock_status } = product;
-
-      // Verificar si el producto tiene imágenes asociadas
-      const formattedImages = images.map((image) => ({
-        id: image.id,
-        src: image.src,
-        name: image.name,
-        alt: image.alt || "Sin descripción",
-      }));
-
-      return {
-        id,
-        name,
-        description,
-        status,
-        price,
-        images: formattedImages,
-        stock_status,
-      };
     });
 
-    return  {
+    console.log("Datos completos recibidos del backend:", response.data);
+
+    // Formatear los datos recibidos
+    const products = formatProducts(response.data.productsData);
+
+    // Retornar productos y datos de paginación
+    return {
       products,
-      totalPages: response.data.totalPages, // Número total de páginas
-      currentPage: response.data.currentPage, // Página actual
+      totalPages: response.data.totalPages,
+      currentPage: response.data.currentPage,
     };
   } catch (error) {
     console.error("Error al obtener los productos:", error.message);
     throw error; // Lanza el error para manejarlo en el frontend
   }
 };
+
+// Función para determinar la ruta según el rol
+const getProductsEndpoint = (role) => {
+  if (role === "vendedor") {
+    return `${API_URL}/products/user`;
+  }
+  return `${API_URL}/products`; // Ruta por defecto para otros roles
+};
+
+
+
+// Función para formatear productos
+const formatProducts = (productsData) => {
+  return productsData.map((product) => {
+    const { id, name, description, status, price, images, stock_status } = product;
+
+    // Formatear las imágenes asociadas al producto
+    const formattedImages = images.map((image) => ({
+      id: image.id,
+      src: image.src,
+      name: image.name,
+      alt: image.alt || "Sin descripción",
+    }));
+
+    return {
+      id,
+      name,
+      description,
+      status,
+      price,
+      images: formattedImages,
+      stock_status,
+    };
+  });
+};
+
 
 
 /**
