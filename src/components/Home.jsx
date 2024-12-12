@@ -3,6 +3,7 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsAction } from "../redux/actions/productActions";
 import ProductList from "./ProductList";
+/*import ProductDetail from "./ProductDetail";*/
 import Navbar  from "./Navbar";
 
 
@@ -42,8 +43,9 @@ const Home = () => {
     {error ? (
       <Typography color="error">{error}</Typography>
     ) : (
-     
-      < ProductList />
+      <>
+      <ProductList />
+    </>
     )}
   </Box>
 

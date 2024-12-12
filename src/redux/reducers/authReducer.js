@@ -13,8 +13,8 @@ const initialState = {
 
 //Reducer para manejar el estado de autenticación.
 const authReducer = (state = initialState, action) => {
-  console.log("Acción recibida:", action);
-  console.log("Estado actual:", state);
+ // console.log("Acción recibida:", action);
+ // console.log("Estado actual:", state);
 
   switch (action.type) {
     case LOGIN_SUCCESS:
@@ -28,7 +28,7 @@ const authReducer = (state = initialState, action) => {
     case LOGOUT_SUCCESS:
       return initialState;
     case LOGIN_FAILURE:
-      console.log("Error en login:", action.payload);
+     // console.log("Error en login:", action.payload);
       return {
         ...state,
         user: null,

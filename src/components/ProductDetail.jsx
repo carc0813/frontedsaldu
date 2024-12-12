@@ -1,21 +1,30 @@
 import React, { useEffect } from "react";
-import { Box, Typography, Button, CircularProgress, Snackbar } from "@mui/material";
+import {
+  Box,
+  Typography,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { fetchProductDetailAction } from "../redux/actions/productActions";
+import {
+  selectProductDetail,
+  selectProductDetailError,
+  selectProductDetailLoading,
+} from "../services/productSelectors";
+import { fetchProductDetail } from "../redux/actions/productActions";
+import { useNavigate } from "react-router-dom";
 
-const ProductDetail = () => {
-  const { id } = useParams(); // Obtener ID desde la URL
+const ProductDetail = ({ id }) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  // Obtener el estado global
-  const { productDetail, error, loading } = useSelector(
-    (state) => state.productDetail || {}
-  );
+  const productDetail = useSelector(selectProductDetail);
+  const error = useSelector(selectProductDetailError);
+  const loading = useSelector(selectProductDetailLoading);
 
   useEffect(() => {
     if (id) {
-      dispatch(fetchProductDetailAction(id)); // Llamar a la acción para cargar los detalles
+      dispatch(fetchProductDetail(id)); // Llamar a la acción para cargar los detalles
     }
   }, [dispatch, id]);
 
@@ -29,12 +38,9 @@ const ProductDetail = () => {
 
   if (error) {
     return (
-      <Box>
-        <Snackbar
-          open={Boolean(error)}
-          message={`Error al cargar el producto: ${error}`}
-          autoHideDuration={6000}
-        />
+      <Box textAlign="center" padding={4}>
+        <Typography color="error">Error al cargar el producto: {error}</Typography>
+        <Button variant="contained" color="primary" onClick={() => navigate("/")}>Volver a la página principal</Button>
       </Box>
     );
   }
@@ -48,9 +54,9 @@ const ProductDetail = () => {
   return (
     <Box display="flex" flexDirection="column" alignItems="center" padding={4}>
       <img
-        src={images[0]?.src || "/placeholder.jpg"}
-        alt={name}
-        style={{ maxWidth: "300px", borderRadius: "8px" }}
+        src={Array.isArray(images) && images.length > 0 ? images[0].src : "/placeholder.jpg"}
+        alt={name || "Producto"}
+        style={{ maxWidth: "300px", borderRadius: "8px", marginBottom: "16px" }}
       />
       <Typography variant="h4" gutterBottom>
         {name}
@@ -61,8 +67,13 @@ const ProductDetail = () => {
       <Typography variant="h5" color="primary" gutterBottom>
         ${price}
       </Typography>
-      <Button variant="contained" color="primary">
-        Comprar Ahora
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => navigate("/")}
+        style={{ marginTop: "16px" }}
+      >
+        Volver a la página principal
       </Button>
     </Box>
   );

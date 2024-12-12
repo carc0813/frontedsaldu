@@ -9,6 +9,7 @@ const PaginationComponent = ({ currentPage = 1, totalPages = 1, onPageChange }) 
         sx={{ marginTop: 2 }}
     >
         <Pagination
+        
             count={totalPages}
             page={currentPage}
             onChange={onPageChange}

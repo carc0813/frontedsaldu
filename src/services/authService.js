@@ -28,7 +28,7 @@ export const loginUser = async (email, password) => {
 
     // Decodificar el token para extraer datos del usuario
     const decodedUser = jwtDecode(token);
-    console.log("Token descifrado:", decodedUser);
+   // console.log("Token descifrado:", decodedUser);
 
     // Almacenar datos del usuario actual
     currentUser = { token, role: decodedUser.role, id_user: decodedUser.id_user };

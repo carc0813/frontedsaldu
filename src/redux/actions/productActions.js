@@ -1,6 +1,6 @@
 import {
   fetchProductsByRole,
-  useProductDetail,
+  fetchProductDetailsFromAPI
 } from "../../services/productService";
 
 export const FETCH_PRODUCTS_SUCCESS = "FETCH_PRODUCTS_SUCCESS";
@@ -9,25 +9,29 @@ export const FETCH_PRODUCT_DETAIL_SUCCESS = "FETCH_PRODUCT_DETAIL_SUCCESS";
 export const FETCH_PRODUCT_DETAIL_ERROR = "FETCH_PRODUCT_DETAIL_ERROR";
 export const SET_CURRENT_PAGE="SET_CURRENT_PAGE,";
 export const  CLEAR_PRODUCTS="CLEAR_PRODUCTS";
-export const LOAD_PRODUCTS_BY_ROLE="LOAD_PRODUCTS_BY_ROLE"
+export const LOAD_PRODUCTS_BY_ROLE="LOAD_PRODUCTS_BY_ROLE";
+
+
+
 
 export const fetchProductsAction = (page = 1, limit = 12) => {
   return async (dispatch) => {
     try {
+      console.log("Fetching products for page:", page, "with limit:", limit);
       // Llamada a fetchProductsByRole, que devuelve productos y datos de paginación
       const {products, totalPages, page: currentPage} =  await fetchProductsByRole(page, limit);
-
+      console.log("Datos de productos recibidos:", { products, totalPages, page });
       // Dispatch para actualizar el estado global
-      console.log("Datos enviados al reducer:", {
-        products,
-        page,
-        totalPages,
-      });
+      // //console.log("Datos enviados al reducer:", {
+      //   products,
+      //   page,
+      //   totalPages,
+      // });
       dispatch({
         type: FETCH_PRODUCTS_SUCCESS,
         payload: {
           products,
-          page,
+          page, // Página actual desde el servidor
           totalPages
         },
       });
@@ -41,13 +45,16 @@ export const fetchProductsAction = (page = 1, limit = 12) => {
   };
 };
 
+
 // Acción para establecer la página actual
-export const setCurrentPage = (page) => ({
-  type: SET_CURRENT_PAGE,
-  payload: page,
-});
+export const setCurrentPage = (page) => {
+  if (typeof page !== "number" || page < 1) {
+    console.error("Número de página inválido:", page);
+    return { type: SET_CURRENT_PAGE, payload: 1 }; // Valor por defecto en caso de error
+  }
 
-
+  return { type: SET_CURRENT_PAGE, payload: page };
+};
 
 /**
  * Acción para obtener detalle de un producto
@@ -57,31 +64,34 @@ export const setCurrentPage = (page) => ({
 
 
 // Acción para obtener los detalles del producto
-export const fetchProductDetailAction = (productId) => {
-  return async (dispatch) => {
-    try {
-      // Llamar al servicio que obtiene los detalles del producto
-      const productDetail = await useProductDetail(productId);
 
-      // Dispatch para actualizar el estado global con el detalle del producto
-      dispatch({
-        type: FETCH_PRODUCT_DETAIL_SUCCESS,
-        payload: productDetail,
-      });
-    } catch (error) {
-      // Manejo de error
-      console.error("Error al obtener el detalle del producto:", error.message);
+export const fetchProductDetail = (productId = null) => async (dispatch) => {
+  try {
+    console.log("fetchProductDetail llamada con productId:", productId);
 
-      // Dispatch para indicar el error al obtener el detalle
-      dispatch({
-        type: FETCH_PRODUCT_DETAIL_ERROR,
-        payload: error.message,
-      });
+    // Obtén el token desde localStorage
+    const token = localStorage.getItem("token");
+    if (!token) {
+      throw new Error("Token no encontrado. Usuario no autenticado.");
     }
-  };
+
+    const productDetails = await fetchProductDetailsFromAPI(token, productId);
+
+    console.log("Detalles obtenidos:", productDetails);
+
+    dispatch({
+      type: FETCH_PRODUCT_DETAIL_SUCCESS,
+      payload: productDetails,
+    });
+  } catch (error) {
+    console.error("Error al obtener el detalle del producto:", error);
+
+    dispatch({
+      type: FETCH_PRODUCT_DETAIL_ERROR,
+      payload: error.message || "Error al cargar los detalles del producto",
+    });
+  }
 };
-
-
 
 export const clearProducts = () => ({ type: CLEAR_PRODUCTS });
 export const loadProductsByRole = (role) => async (dispatch) => {
