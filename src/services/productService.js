@@ -34,7 +34,7 @@ export const fetchProductsByRole = async ( page = 1, limit = 12) => {
    
     // Formatear los datos recibidos
     const products = formatProducts(response.data.productsData);
-    console.log({ page, limit, products, totalPages:response.data.totalPages });
+   // console.log({ page, limit, products, totalPages:response.data.totalPages });
     // Retornar productos y datos de paginación
     return {
      
@@ -108,7 +108,7 @@ export const fetchProductDetailsFromAPI = async (token, productId = null) => {
       ? `${API_URL}/products/${productId}`
       : `${API_URL}/products`;
 
-    console.log("Llamando a la API en el endpoint:", endpoint, "con token:", token);
+   // console.log("Llamando a la API en el endpoint:", endpoint, "con token:", token);
 
     const response = await axios.get(endpoint, {
       headers: {

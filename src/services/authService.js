@@ -7,7 +7,7 @@ let currentUser = null; // Variable para almacenar el usuario actual
 
 // Función para limpiar los datos del usuario
 const clearUserData = () => {
-  console.log("Limpiando datos de sesión anteriores...");
+//  console.log("Limpiando datos de sesión anteriores...");
   currentUser = null; // Limpiar usuario en memoria
   localStorage.removeItem('token)') ;
   localStorage.removeItem('role');
@@ -24,7 +24,7 @@ export const loginUser = async (email, password) => {
 
     // Guardar el token en localStorage
     localStorage.setItem('authToken', token); 
-    console.log('Inicio de sesión exitoso');
+  //  console.log('Inicio de sesión exitoso');
 
     // Decodificar el token para extraer datos del usuario
     const decodedUser = jwtDecode(token);
@@ -50,7 +50,7 @@ export const getCurrentUser = () => {
 // Función de logout mejorada
 
 export const logoutUser = (currentRole) => {
-  console.log("Cerrando sesión...");
+ // console.log("Cerrando sesión...");
   
   // Limpia datos locales
   localStorage.removeItem("token");
@@ -58,5 +58,5 @@ export const logoutUser = (currentRole) => {
   localStorage.removeItem("role");
   localStorage.removeItem("products");
 
-  console.log("Sesión cerrada exitosamente");
+ // console.log("Sesión cerrada exitosamente");
 };

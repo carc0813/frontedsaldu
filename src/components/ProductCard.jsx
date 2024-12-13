@@ -13,7 +13,7 @@ const ProductCard = ({ product }) => {
   const navigate = useNavigate();
 
   const handleViewDetails = () => {
-    navigate(`/products/${product.id}`); // Cambiado a plural "products"
+    navigate(`/products/${product.id}`, { state: { product } }); // Pasar datos a través del estado
   };
 
   return (

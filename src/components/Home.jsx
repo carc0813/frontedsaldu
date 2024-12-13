@@ -3,7 +3,7 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchProductsAction } from "../redux/actions/productActions";
 import ProductList from "./ProductList";
-/*import ProductDetail from "./ProductDetail";*/
+import ProductManager from "../components/ProductManager"; // Importa ProductManager
 import Navbar  from "./Navbar";
 
 
@@ -38,16 +38,27 @@ const Home = () => {
 
   return (
     <Box padding={3}>
-      <Navbar/>
-     <h1>Bienvenido, {role}</h1>
-    {error ? (
-      <Typography color="error">{error}</Typography>
-    ) : (
-      <>
-      <ProductList />
-    </>
-    )}
-  </Box>
+      <Navbar />
+      <h1>Bienvenido, {role}</h1>
+
+      {/* Mostrar ProductManager solo si el usuario es administrador */}
+      {role && role === 'admin' && (
+        <Box mb={4}>
+          <Typography variant="h5" gutterBottom>
+            Gestión de Productos
+          </Typography>
+          <ProductManager /> {/* Aquí agregas el componente ProductManager */}
+        </Box>
+      )}
+
+      {error ? (
+        <Typography color="error">{error}</Typography>
+      ) : (
+        <>
+          <ProductList products={products} />
+        </>
+      )}
+    </Box>
 
   );
 };

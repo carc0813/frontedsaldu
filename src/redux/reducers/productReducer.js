@@ -20,7 +20,7 @@ const initialState = {
 export default function productReducer(state = initialState, action) {
   switch (action.type) {
     case FETCH_PRODUCTS_SUCCESS:
-      console.log("Productos obtenidos:", action.payload.products);
+     // console.log("Productos obtenidos:", action.payload.products);
       return {
         ...state,
         products: action.payload.products,
@@ -35,7 +35,7 @@ export default function productReducer(state = initialState, action) {
         totalPages: 0,
       };
     case SET_CURRENT_PAGE: // Manejar el cambio de página actual
-    console.log("Página actual actualizada:", action.payload);
+  //  console.log("Página actual actualizada:", action.payload);
       return {
         ...state,
         page: action.payload,

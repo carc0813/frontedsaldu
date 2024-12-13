@@ -6,10 +6,13 @@ import {
   loadProductsByRole,
   clearProducts,
 } from "../redux/actions/productActions"; // Acciones para cargar y limpiar productos
+import {Link} from "@mui/material";
 
 const NavBar = () => {
   const dispatch = useDispatch();
   const { user, role } = useSelector((state) => state.auth); // Obtén el estado del usuario y rol
+ 
+ // console.log(isAuthenticated, role); 
   const navigate = useNavigate();
 
   // Efecto para cargar productos solo si hay usuario y rol
@@ -57,7 +60,25 @@ const NavBar = () => {
           </Typography>
         )}
       </Toolbar>
+      <AppBar position="static">
+      <Toolbar>
+        <Typography variant="h6" sx={{ flexGrow: 1 }}>
+          Mi Tienda
+        </Typography>
+        <nav>
+        {/* Mostrar el botón solo si el usuario está autenticado y es admin */}
+      { role === 'administrator' && (
+       <Link to="/product-manager">
+          <Button variant="contained" color="primary">
+            Gestionar Productos
+          </Button>
+        </Link>
+      )}
+    </nav>
+      </Toolbar>
     </AppBar>
+    </AppBar>
+    
   );
 };
 

@@ -18,14 +18,14 @@ const ProductsList = () => {
   // Cargar productos cuando cambie la página
   useEffect(() => {
     if (page) {
-      console.log("Disparando fetchProductsAction para la página:", page);
+    //  console.log("Disparando fetchProductsAction para la página:", page);
       dispatch(fetchProductsAction(page, limit));
     }
   }, [dispatch, page]);
 
   // Manejador de cambio de página
   const handlePageChange = (event, selectedPage) => {
-    console.log("Cambiando a la página:", selectedPage); // Verifica que el valor de la página es correcto
+  //  console.log("Cambiando a la página:", selectedPage); // Verifica que el valor de la página es correcto
     dispatch(setCurrentPage(selectedPage));
   };
 

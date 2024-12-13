@@ -1,83 +1,60 @@
-import React, { useEffect } from "react";
+
+import React from "react";
 import {
-  Box,
+  Card,
+  CardMedia,
+  CardContent,
   Typography,
+  CardActions,
   Button,
-  CircularProgress,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import {
-  selectProductDetail,
-  selectProductDetailError,
-  selectProductDetailLoading,
-} from "../services/productSelectors";
-import { fetchProductDetail } from "../redux/actions/productActions";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
-const ProductDetail = ({ id }) => {
-  const dispatch = useDispatch();
+const ProductDetail = () => {
   const navigate = useNavigate();
+  const location = useLocation();
+  const product = location.state?.product; // Recuperar el producto del estado de navegación
 
-  const productDetail = useSelector(selectProductDetail);
-  const error = useSelector(selectProductDetailError);
-  const loading = useSelector(selectProductDetailLoading);
+  const handleBack = () => {
+    navigate("/"); // Volver a la página principal
+  };
 
-  useEffect(() => {
-    if (id) {
-      dispatch(fetchProductDetail(id)); // Llamar a la acción para cargar los detalles
-    }
-  }, [dispatch, id]);
-
-  if (loading) {
+  if (!product) {
     return (
-      <Box display="flex" justifyContent="center" alignItems="center" height="100vh">
-        <CircularProgress />
-      </Box>
+      <Typography variant="h6" color="error" textAlign="center" marginTop={2}>
+        No se encontraron detalles del producto.
+      </Typography>
     );
   }
 
-  if (error) {
-    return (
-      <Box textAlign="center" padding={4}>
-        <Typography color="error">Error al cargar el producto: {error}</Typography>
-        <Button variant="contained" color="primary" onClick={() => navigate("/")}>Volver a la página principal</Button>
-      </Box>
-    );
-  }
-
-  if (!productDetail) {
-    return <div>Cargando detalles del producto...</div>;
-  }
-
-  const { name, description, price, images } = productDetail;
+  const { name, description, price, images } = product;
 
   return (
-    <Box display="flex" flexDirection="column" alignItems="center" padding={4}>
-      <img
-        src={Array.isArray(images) && images.length > 0 ? images[0].src : "/placeholder.jpg"}
-        alt={name || "Producto"}
-        style={{ maxWidth: "300px", borderRadius: "8px", marginBottom: "16px" }}
+    <Card sx={{ maxWidth: 345, width: "100%", margin: "auto", padding: 2 }}>
+      <CardMedia
+        component="img"
+        height="200"
+        image={images[0]?.src || "https://via.placeholder.com/200"}
+        alt={images[0]?.alt || "Producto sin imagen"}
       />
-      <Typography variant="h4" gutterBottom>
-        {name}
-      </Typography>
-      <Typography variant="body1" color="text.secondary" gutterBottom>
-        {description}
-      </Typography>
-      <Typography variant="h5" color="primary" gutterBottom>
-        ${price}
-      </Typography>
-      <Button
-        variant="contained"
-        color="primary"
-        onClick={() => navigate("/")}
-        style={{ marginTop: "16px" }}
-      >
-        Volver a la página principal
-      </Button>
-    </Box>
+      <CardContent>
+        <Typography gutterBottom variant="h5" component="div">
+          {name}
+        </Typography>
+        <Typography variant="body2" color="textSecondary" sx={{ marginBottom: 2 }}>
+          {description}
+        </Typography>
+        <Typography variant="h6" color="primary">
+          Precio: ${price}
+        </Typography>
+      </CardContent>
+      <CardActions>
+        <Button size="small" variant="contained" color="primary" onClick={handleBack}>
+          Volver
+        </Button>
+      </CardActions>
+    </Card>
   );
 };
 
 export default ProductDetail;
-
