@@ -11,9 +11,16 @@ import {Link} from "@mui/material";
 const NavBar = () => {
   const dispatch = useDispatch();
   const { user, role } = useSelector((state) => state.auth); // Obtén el estado del usuario y rol
- 
+  const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+
+  console.log('Role:', role);
+console.log('Authenticated:', isAuthenticated);
  // console.log(isAuthenticated, role); 
   const navigate = useNavigate();
+
+  const handleNavigation = () => {
+    navigate("/product-manager");
+  };
 
   // Efecto para cargar productos solo si hay usuario y rol
   useEffect(() => {
@@ -67,12 +74,12 @@ const NavBar = () => {
         </Typography>
         <nav>
         {/* Mostrar el botón solo si el usuario está autenticado y es admin */}
-      { role === 'administrator' && (
-       <Link to="/product-manager">
-          <Button variant="contained" color="primary">
-            Gestionar Productos
-          </Button>
-        </Link>
+      {isAuthenticated && role === 'administrator' && (
+      <Link to="/product-manager" style={{ textDecoration: 'none' }}>
+      <Button variant="contained" color="primary" onClick={handleNavigation}>
+      Gestionar Productos
+       </Button>
+    </Link>
       )}
     </nav>
       </Toolbar>

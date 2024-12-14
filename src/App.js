@@ -9,26 +9,36 @@ import ProductManager  from "./components/ProductManager";
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
   const role = useSelector((state) => state.auth.role); // Obtener el rol del usuario
+
+
+  
   const router = createBrowserRouter([
     {
-      path: "/",
-      element: isAuthenticated ? <Home /> : <Navigate to="/login" />, // Redirige a login si no está autenticado
+      path: "/", // Ruta raíz
+      element: isAuthenticated ? <Home /> : <Navigate to="/login" />,
     },
     {
-      path: "/products/:id",
-      element: isAuthenticated ? <ProductDetail /> : <Navigate to="/login" />, // Redirige a login si no está autenticado
+      path: "/login", // Ruta de login
+      element: !isAuthenticated ? <Login /> : <Navigate to="/" />,
     },
     {
-      path: "/login", // Ruta para login
-      element: !isAuthenticated ? <Login /> : <Navigate to="/" />, // Si está autenticado, redirige a home
+      path: "/products/:id", // Detalle de productos
+      element: isAuthenticated ? <ProductDetail /> : <Navigate to="/login" />,
     },
-     // Ruta para la gestión de productos, solo accesible si el usuario es admin
-     {
-      path: "/product-manager",
-      element: isAuthenticated && role === "admin" ? <ProductManager /> : <Navigate to="/" />, // Redirige a home si no es admin
+    {
+      path: "/product-manager", // Gestión de productos
+      element:  isAuthenticated && role === "administrator" ? (
+        <ProductManager />
+      ) : (
+        <Navigate to="/" />
+      ),
+    },
+    {
+      path: "*", // Ruta para no encontradas
+      element: <div>Página no encontrada</div>,
     },
   ]);
-
+  
   return <RouterProvider router={router} />;
 };
 
