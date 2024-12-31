@@ -1,229 +1,155 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // Importar useNavigate
-import axios from "axios";
+import React, { useEffect, useState } from "react";
+import { Grid, Box, Typography, Button, CircularProgress } from "@mui/material";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import Navbar from "./Navbar";
+import ProductCard from "./ProductCard";
+import ProductFormDialog from "./ProductFormDialog";
+import PaginationComponent from "./PaginationComponent";
 import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Divider,
-} from "@mui/material";
-import { Delete, Edit } from "@mui/icons-material";
+  fetchProductsAction,
+  setCurrentPage,
+  deleteProduct,
+  updateProduct,
+  createProduct,
+} from "../redux/actions/productActions";
 
 const ProductManager = () => {
-  const [products, setProducts] = useState([]); // Lista de productos
-  const [filteredProducts, setFilteredProducts] = useState([]); // Productos filtrados
-  const [formData, setFormData] = useState({
-    id: null,
-    name: "",
-    description: "",
-    price: "",
-    image: "",
-  });
-  const [editing, setEditing] = useState(false);
-  const navigate = useNavigate(); // Hook para navegación
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const API_URL = "http://localhost:8080"; // Cambia por tu URL de la API
+  // Estado global y local
+  const { products, totalPages, page, loading, error } = useSelector((state) => state.products);
+  const [openDialog, setOpenDialog] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
 
-  const fetchProducts = async () => {
-    try {
-      const token = localStorage.getItem("authToken");
-      if (!token) {
-        console.error("Token no encontrado.");
-        return;
-      }
-  
-      const response = await axios.get(`${API_URL}/products`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-  
-      // Verifica si los datos están en response.data.productsData
-      const productsList = response.data.productsData || []; 
-      console.log("Productos cargados:", productsList);
-  
-      setProducts(productsList);
-      setFilteredProducts(productsList);
-    } catch (error) {
-      console.error("Error al obtener productos:", error.response || error.message);
-    }
-  };
-  
-  
+  const currentPage = page || 1;
+  const limit = 12;
 
-  // Obtener todos los productos
+  // Cargar productos
   useEffect(() => {
-    fetchProducts();
-  }, []);
+    dispatch(fetchProductsAction(currentPage, limit));
+  }, [dispatch, currentPage]);
 
+  // Abrir el formulario para crear o editar un producto
+  const handleOpenDialog = (product = null) => {
+    setEditingProduct(product);
+    setOpenDialog(true);
+  };
+
+  // Guardar o actualizar producto
+  const handleSaveProduct = async (productData) => {
+    try {
+      // Crear el objeto del producto actualizado
+      const updatedProduct = {
+        name: productData.name,
+        price: productData.price,
+        description: productData.description,
+        status: productData.status || "draft",
+      };
   
-  // Función para manejar los cambios en el formulario
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  // Función para guardar o actualizar el producto
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editing) {
-        await axios.put(`${API_URL}/${formData.id}`, formData);
-        fetchProducts();
-        setEditing(false);
+      // Manejo de imágenes
+      const existingImages = editingProduct?.images || []; // Imágenes ya existentes
+      const newImages = productData.newImages || []; // Nuevas imágenes seleccionadas
+  
+      // Combinar imágenes existentes con nuevas
+      const allImages = [...existingImages, ...newImages]; // Fusiona las imágenes
+      updatedProduct.images = allImages; // Asignar las imágenes combinadas
+  
+      console.log("Producto actualizado:", updatedProduct);
+  
+      // Verificar si se está editando o creando un producto
+      if (editingProduct && editingProduct.id) {
+        await dispatch(updateProduct(editingProduct.id, updatedProduct)); // Actualizar producto
       } else {
-        await axios.post(API_URL, formData);
-        fetchProducts();
+        await dispatch(createProduct(updatedProduct)); // Crear nuevo producto
       }
-      setFormData({ id: null, name: "", description: "", price: "", image: "" });
+  
+      // Recargar productos después de la acción
+      await dispatch(fetchProductsAction(currentPage, limit));
+  
+      // Cerrar el diálogo y restablecer el estado
+      setOpenDialog(false);
+      setEditingProduct(null);
     } catch (error) {
-      console.error("Error al guardar producto:", error);
+      console.error("Error al guardar el producto:", error);
     }
   };
+  
 
-  // Función para eliminar producto
-  const handleDelete = async (id) => {
-    try {
-      await axios.delete(`${API_URL}/${id}`);
-      fetchProducts();
-    } catch (error) {
-      console.error("Error al eliminar producto:", error);
-    }
+  // Eliminar producto
+  const handleDeleteProduct = (productId) => {
+    dispatch(deleteProduct(productId)).then(() => {
+      dispatch(fetchProductsAction(currentPage, limit));
+    });
   };
 
-  // Función para editar producto
-  const handleEdit = (product) => {
-    setFormData(product);
-    setEditing(true);
+  // Cambiar página
+  const handlePageChange = (event, newPage) => {
+    dispatch(setCurrentPage(newPage));
   };
 
-  // Función de búsqueda de productos por nombre o ID
-  const handleSearch = (e) => {
-    const searchQuery = e.target.value.toLowerCase();
-    const filtered = products.filter((product) =>
-      product.name.toLowerCase().includes(searchQuery) ||
-      product.id.toString().includes(searchQuery)
-    );
-    setFilteredProducts(filtered);
+  // Volver a inicio
+  const handleBackToHome = () => {
+    navigate("/");
   };
 
+  // Renderizado del componente
   return (
-    <Box padding={4}>
-      {/* Botón para regresar */}
-      <Button
-        variant="outlined"
-        color="secondary"
-        onClick={() => navigate("/")} // Redirige a la página principal
-        sx={{ marginBottom: 2 }}
-      >
-        Volver a la Página Principal
-      </Button>
-
+    <Box>
+      <Navbar />
       <Typography variant="h4" gutterBottom>
         Gestión de Productos
       </Typography>
 
-      {/* Barra de búsqueda */}
-      <TextField
-        label="Buscar por nombre o ID"
-        onChange={handleSearch}
-        fullWidth
-        margin="normal"
-      />
-
-      {/* Formulario */}
-      <form onSubmit={handleSubmit}>
-        <TextField
-          label="Nombre"
-          name="name"
-          value={formData.name}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          required
-        />
-        <TextField
-          label="Descripción"
-          name="description"
-          value={formData.description}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          multiline
-          rows={3}
-        />
-        <TextField
-          label="Precio"
-          name="price"
-          value={formData.price}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          type="number"
-          required
-        />
-        <TextField
-          label="URL de la Imagen"
-          name="image"
-          value={formData.image}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <Button type="submit" variant="contained" color="primary" fullWidth>
-          {editing ? "Actualizar Producto" : "Crear Producto"}
+      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Button variant="contained" color="primary" onClick={() => handleOpenDialog()}>
+          Crear Producto
         </Button>
-      </form>
+        <Button variant="outlined" color="secondary" onClick={handleBackToHome}>
+          Volver a la Página Principal
+        </Button>
+      </Box>
 
-      <Divider sx={{ marginY: 4 }} />
-
-      <Typography variant="h5" gutterBottom>
-        Lista de Productos
-      </Typography>
-      
-      <List>
-  {filteredProducts && Array.isArray(filteredProducts) && filteredProducts.length > 0 ? (
-    filteredProducts.map((product) => (
-      <ListItem
-        key={product.id}
-        sx={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-        }}
-      >
-        <ListItemText
-          primary={product.name}
-          secondary={`Precio: $${product.price}`}
-        />
-        <Box>
-          <IconButton color="primary" onClick={() => handleEdit(product)}>
-            <Edit />
-          </IconButton>
-          <IconButton
-            color="secondary"
-            onClick={() => handleDelete(product.id)}
-          >
-            <Delete />
-          </IconButton>
+      {loading ? (
+        <Box display="flex" justifyContent="center" alignItems="center" minHeight="50vh">
+          <CircularProgress />
         </Box>
-      </ListItem>
-    ))
-  ) : (
-    <Typography textAlign="center" color="textSecondary">
-      No hay productos disponibles.
-    </Typography>
-  )}
-</List>
+      ) : error ? (
+        <Typography color="error">{error}</Typography>
+      ) : (
+        <Grid container spacing={2}>
+          {Array.isArray(products) && products.length > 0 ? (
+            products.map((product) => (
+              <Grid item key={product.id} xs={12} sm={6} md={4}>
+                <ProductCard
+                  product={product}
+                  onEdit={() => handleOpenDialog(product)}
+                  onDelete={() => handleDeleteProduct(product.id)}
+                />
+              </Grid>
+            ))
+          ) : (
+            <Box textAlign="center" mt={4}>
+              <Typography variant="body1">No hay productos disponibles.</Typography>
+            </Box>
+          )}
+        </Grid>
+      )}
 
+      <PaginationComponent currentPage={currentPage} totalPages={totalPages} onPageChange={handlePageChange} />
+
+      <ProductFormDialog
+        open={openDialog}
+        onClose={() => setOpenDialog(false)}
+        onSave={handleSaveProduct}
+        product={editingProduct}
+      />
     </Box>
   );
 };
 
 export default ProductManager;
+
+
 

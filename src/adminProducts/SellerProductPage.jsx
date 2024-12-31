@@ -5,7 +5,7 @@ import ProductCard from "./ProductCard";
 import { fetchAdminProductsAction } from "../redux/actions/productActions";
 import Navbar from "./Navbar";
 
-const AdminProductsPage = () => {
+const SellerProductPage = () => {
   const dispatch = useDispatch();
   const { products } = useSelector((state) => state.products);
 
@@ -17,7 +17,7 @@ const AdminProductsPage = () => {
     <Box>
       <Navbar />
       <Typography variant="h4" gutterBottom>
-        Productos del Administrador
+        Productos del Vendedor 
       </Typography>
 
       <Grid container spacing={2}>
@@ -37,4 +37,4 @@ const AdminProductsPage = () => {
   );
 };
 
-export default AdminProductsPage;
+export default SellerProductPage;

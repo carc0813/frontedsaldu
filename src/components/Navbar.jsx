@@ -73,13 +73,12 @@ console.log('Authenticated:', isAuthenticated);
           Mi Tienda
         </Typography>
         <nav>
-        {/* Mostrar el botón solo si el usuario está autenticado y es admin */}
-      {isAuthenticated && role === 'administrator' && (
-      <Link to="/product-manager" style={{ textDecoration: 'none' }}>
-      <Button variant="contained" color="primary" onClick={handleNavigation}>
-      Gestionar Productos
-       </Button>
-    </Link>
+        {isAuthenticated && (role === 'administrator' || role === 'vendedor') && (
+  <Link to="/product-manager" style={{ textDecoration: 'none' }}>
+    <Button variant="contained" color="primary" onClick={handleNavigation}>
+      Gestión de Productos
+    </Button>
+  </Link>
       )}
     </nav>
       </Toolbar>

@@ -1,10 +1,13 @@
 
-import React, { useEffect } from "react";
-import { Grid, Box, Typography } from "@mui/material";
+import React, { useEffect,useState} from "react";
+import { Grid, Button, Typography } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
 import ProductCard from "./ProductCard";
 import PaginationComponent from "./PaginationComponent";
-import { fetchProductsAction, setCurrentPage, } from "../redux/actions/productActions";
+import { fetchProductsAction, setCurrentPage,deleteProduct,updateProduct,createProduct} from "../redux/actions/productActions";
+import ProductFormDialog from "./ProductFormDialog";
+
+
 
 const ProductsList = () => {
   const dispatch = useDispatch();
@@ -12,6 +15,9 @@ const ProductsList = () => {
   // Datos desde Redux
   const { products, totalPages, page } = useSelector((state) => state.products);
    // Maneja valores indefinidos con un valor predeterminado
+   const [openDialog, setOpenDialog] = useState(false); // Estado del diálogo
+   const [editingProduct, setEditingProduct] = useState(null); // Producto a editar
+
    const currentPage = page || 1;
   const limit = 12; // Productos por página
 
@@ -29,11 +35,41 @@ const ProductsList = () => {
     dispatch(setCurrentPage(selectedPage));
   };
 
+ 
+      // Abrir el formulario de crear/editar
+     const handleOpenDialog = (product = null) => {
+        setEditingProduct(product); // Establecer el producto a editar
+        setOpenDialog(true); // Abrir el diálogo
+      };
+    
+      // Eliminar producto
+      const handleDeleteProduct = (productId) => {
+        dispatch(deleteProduct(productId)); // Despachar la acción de eliminar
+      };
+    
+      // Guardar el producto (crear o actualizar)
+      const handleSaveProduct = (productData) => {
+        if (editingProduct) {
+          dispatch(updateProduct(editingProduct.id, productData)); // Editar producto
+        } else {
+          dispatch(createProduct(productData)); // Crear producto
+        }
+        setOpenDialog(false); // Cerrar el diálogo
+        setEditingProduct(null); // Resetear el estado de edición
+      };
+
   return (
-    <Box>
+    <>
+    
       <Typography variant="h4">
         Productos {role === "admin" ? "de Todos" : "Propios"}
       </Typography>
+      {/* Solo los administradores pueden crear productos */}
+      {role === "admin" && (
+       <Button variant="contained" color="primary" onClick={() => handleOpenDialog()}>
+          Crear Producto
+        </Button>
+      )} 
       {<Grid container spacing={2}>
       {Array.isArray(products) && products.length > 0 ? (
          products.map((product) => (
@@ -50,8 +86,17 @@ const ProductsList = () => {
         totalPages={totalPages}
         onPageChange={handlePageChange}
       />
-    </Box>
+      {/* Diálogo para crear/editar productos */}
+     <ProductFormDialog     
+      open={openDialog} // Estado del diálogo
+      onClose={() => setOpenDialog(false)} // Cerrar el diálogo
+       onSave={handleSaveProduct} // Guardar el producto
+       product={editingProduct} // Producto a editar 
+       />      
+    </>
   );
 };
 
 export default ProductsList;
+
+

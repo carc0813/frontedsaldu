@@ -5,6 +5,8 @@ import Login from "./components/Login";
 import ProductDetail from "./components/ProductDetail";
 import { Navigate } from "react-router-dom"; // Para redirigir al login si no está autenticado
 import ProductManager  from "./components/ProductManager";
+
+
  // Asegúrate de que role esté en el estado de Redux
 const App = () => {
   const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
@@ -27,10 +29,10 @@ const App = () => {
     },
     {
       path: "/product-manager", // Gestión de productos
-      element:  isAuthenticated && role === "administrator" ? (
+      element: isAuthenticated && (role === "administrator" || role === "vendedor") ? (
         <ProductManager />
       ) : (
-        <Navigate to="/" />
+        <Navigate to="/" /> // Redirige si no está autenticado o no es admin ni vendedor
       ),
     },
     {

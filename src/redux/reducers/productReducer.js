@@ -6,6 +6,10 @@ import {
   FETCH_PRODUCT_DETAIL_ERROR, // Solo una vez
   CLEAR_PRODUCTS,
   LOAD_PRODUCTS_BY_ROLE,
+  CREATE_PRODUCT,
+  UPDATE_PRODUCT,
+  UPDATE_PRODUCT_FAIL,
+  DELETE_PRODUCT
 } from "../actions/productActions";
 
 const initialState = {
@@ -15,6 +19,7 @@ const initialState = {
   productDetail: null,
   error: null,
   errorDetaill: null,
+  errorUpdate:null
 };
 
 export default function productReducer(state = initialState, action) {
@@ -62,6 +67,29 @@ export default function productReducer(state = initialState, action) {
         totalPages: action.payload.totalPages || 1,
         error: null, // Limpia errores previos
        
+         }; case CREATE_PRODUCT:
+         return {
+           ...state,
+           products: [...state.products, action.payload],
+         };
+         case UPDATE_PRODUCT:
+          return {
+            ...state,
+            products: state.products.map((product) =>
+              String(product.id) === String(action.payload.id) // Comparación segura
+                ? action.payload
+                : product
+            ),
+          };
+         case UPDATE_PRODUCT_FAIL:
+          return{
+            ...state,
+            errorUpdate:action.payload,
+          }
+       case DELETE_PRODUCT:
+         return {
+           ...state,
+           products: state.products.filter((product) => product.id !== action.payload),
          };
     default:
       return state;
